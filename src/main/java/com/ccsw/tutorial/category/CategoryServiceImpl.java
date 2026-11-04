@@ -1,12 +1,12 @@
 package com.ccsw.tutorial.category;
 
+import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.category.model.CategoryDto;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author ccsw
@@ -14,39 +14,47 @@ import java.util.Map;
  */
 // Para crear un SERVICIO :- Siempre en Implementacion
 @Service
-
+//"Las operaciones de la clase se ejecutan dentro de la transaccion"
+// Osea encapsula, y todo sale bien o si falla algo no lo hace
+@Transactional
 public class CategoryServiceImpl implements CategoryService {
-    private long SEQUENCE = 1;
-    private Map<Long, CategoryDto> categories = new HashMap<Long, CategoryDto>();
+    @Autowired
+    CategoryRepository categoryRepository;
 
     /**
      * {@inheritDoc}
      */
-    public List<CategoryDto> findAll() {
-
-        return new ArrayList<CategoryDto>(this.categories.values());
+    //SELECT * FROM category;
+    @Override
+    public List<Category> findAll() {
+        return (List<Category>) this.categoryRepository.findAll();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void save(Long id, CategoryDto dto) {
-        CategoryDto category;
+        Category category;
         if (id == null) {
-            category = new CategoryDto();
-            category.setId(this.SEQUENCE++);
-            this.categories.put(category.getId(), category);
+            category = new Category();
         } else {
-            category = this.categories.get(id);
+            category = this.categoryRepository.findById(id).orElse(null);
         }
         category.setName(dto.getName());
+
+        this.categoryRepository.save(category);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void delete(Long id) {
-        this.categories.remove(id);
+    @Override
+    public void delete(Long id) throws Exception {
+        if (this.categoryRepository.findById(id).orElse(null) == null) {
+            throw new Exception("Category not found");
+        }
+        this.categoryRepository.deleteById(id);
     }
 
 }
