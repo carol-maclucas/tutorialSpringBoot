@@ -35,6 +35,8 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public void save(Long id, CategoryDto dto) {
+        //Como al "Controller" le llega un tipo DTO, lo paso a Category porqueq es llamado por:
+        // "CategoryRepository" (capa de datos) y necesita un tipo CATEGORY
         Category category;
         if (id == null) {
             category = new Category();

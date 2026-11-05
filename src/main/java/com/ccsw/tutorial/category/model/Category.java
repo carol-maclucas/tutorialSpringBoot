@@ -8,6 +8,7 @@ import jakarta.persistence.*;
  */
 //Crear nuestra -> ENTITY -> dentro del pacakage-model de CADA funcionalidad
 // Entity: le digo "esta clase representa una base de datos" ^^^^ "TABLE Category", sino no podremos hacer QUERIES
+// Lo más fácil posible
 @Entity
 
 @Table(name = "category")
