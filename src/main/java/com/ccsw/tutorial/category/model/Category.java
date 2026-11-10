@@ -6,18 +6,19 @@ import jakarta.persistence.*;
  * @author ccsw
  *
  */
-//Crear nuestra -> ENTITY -> dentro del pacakage-model de CADA funcionalidad
-// Entity: le digo "esta clase representa una base de datos" ^^^^ "TABLE Category", sino no podremos hacer QUERIES
+//Crear nuestra -> ENTITY -> dentro del package-model de CADA funcionalidad
+// Entity: le digo "esta clase representa una base de datos" ^^^^ "TABLE Category"
+// Sino no podremos hacer QUERIES
 // Lo más fácil posible
 @Entity
 
 @Table(name = "category")
 public class Category {
-    // PRIMERY KEY - Debe tener esta estructura para evitar COMPUESTOS y DUPLICADOS
+    // PRIMARY KEY - Debe tener esta estructura para evitar COMPUESTOS y DUPLICADOS
     @Id
     // Los genera solos
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // El nombre la columna en la tabla
+    // El nombre la columna en la tabla (estaría bien que fueran igual que DTO)
     @Column(name = "id", nullable = false)
     private Long id;
 

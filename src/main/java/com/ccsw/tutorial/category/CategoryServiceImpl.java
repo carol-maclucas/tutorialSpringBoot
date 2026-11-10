@@ -12,10 +12,10 @@ import java.util.List;
  * @author ccsw
  *
  */
-// Para crear un SERVICIO :- Siempre en Implementacion
+// Para crear un SERVICIO:- Siempre en Implementación
 @Service
-//"Las operaciones de la clase se ejecutan dentro de la transaccion"
-// Osea encapsula, y todo sale bien o si falla algo no lo hace
+//"Las OPERACIONES de la clase se ejecutan DENTRO de la transacción"
+// O sea encapsula, y todo sale bien o si falla algo no lo hace
 @Transactional
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
@@ -35,14 +35,21 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public void save(Long id, CategoryDto dto) {
-        //Como al "Controller" le llega un tipo DTO, lo paso a Category porqueq es llamado por:
-        // "CategoryRepository" (capa de datos) y necesita un tipo CATEGORY
+        //Como al "Controller" le llega un tipo DTO, lo paso a Category porque es llamado por:
+        // "CategoryRepository" (capa de datos) y necesita un tipo CATEGORY (entity)
         Category category;
         if (id == null) {
             category = new Category();
         } else {
             category = this.categoryRepository.findById(id).orElse(null);
+            // NO DEL TUTORIAL: pero si llega id=3 con categoría=null no se manejaría
+            // No es bueno asumir que porque tenga id siempre tendrá categoría
+            if (category == null) {
+                throw new RuntimeException("Category not found");
+            }
         }
+        // Para guardarlo en el "repositorio" ponemos el nombre del "setName.entity" llamando
+        // al nombre del "getName.DTO" que es lo mismo
         category.setName(dto.getName());
 
         this.categoryRepository.save(category);
@@ -58,5 +65,4 @@ public class CategoryServiceImpl implements CategoryService {
         }
         this.categoryRepository.deleteById(id);
     }
-
 }

@@ -16,7 +16,6 @@ public interface CategoryService {
      * @return {@link List} de {@link Category}
      */
     List<Category> findAll();
-
     //--------------------------------------------
 
     /**

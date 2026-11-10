@@ -17,29 +17,38 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
+// ------------- TEST UNITARIOS -----------
+// Como los test unitarios comprueban la "lógica" solemos probar la clase de implementación
+
 //@ExtendWith -> Para indicar que NO inicialice el contexto Spring
 @ExtendWith(MockitoExtension.class)
 public class CategoryTest {
+    // @Mock: creamos un OBJETO FALSO para sustituir al repositorio real
+    // Son los @autowired
     @Mock
     private CategoryRepository categoryRepository;
-
+    // @InjectMocks: crea la instancia de la clase "C.ServiceImpl" e inyecta los mocks
+    //
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
     // Cada método de prueba pondremos @TEST, porque sino no lo ejecutará
     // En cada método SOLO se prueba UNA ACCIÓN
+
     //-------------- LISTA de CATEGORÍAS ------------
     @Test
     public void findAllShouldReturnAllCategories() {
 
         List<Category> list = new ArrayList<>();
+        // Para añadir un objeto Category falso
         list.add(mock(Category.class));
 
-        // Comprobamos el metodo FINDaLL()
+        // Comprobamos el método FINDaLL()
         when(categoryRepository.findAll()).thenReturn(list);
 
         List<Category> categories = categoryService.findAll();
 
+        // Como añado una categoría, compruebo que el tamaño es 1
         assertNotNull(categories);
         assertEquals(1, categories.size());
     }
@@ -49,11 +58,15 @@ public class CategoryTest {
 
     @Test
     public void saveNotExistsCategoryIdShouldInsert() {
-
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setName(CATEGORY_NAME);
+
+        // "ArgumentCaptor" captura los objetos pasados a métodos para poder usar el "get(), set()"
         ArgumentCaptor<Category> category = ArgumentCaptor.forClass(Category.class);
+
         categoryService.save(null, categoryDto);
+        // Comprobar que se llamó al "save()" del repositorio
+        // "capture()" guarda lo que se le ha pasado
         verify(categoryRepository).save(category.capture());
         assertEquals(CATEGORY_NAME, category.getValue().getName());
     }
@@ -67,6 +80,8 @@ public class CategoryTest {
         categoryDto.setName(CATEGORY_NAME);
 
         Category category = mock(Category.class);
+
+        // Cuando se busque el "id", devuelve una categoría existente
         when(categoryRepository.findById(EXISTS_CATEGORY_ID)).thenReturn(Optional.of(category));
 
         categoryService.save(EXISTS_CATEGORY_ID, categoryDto);

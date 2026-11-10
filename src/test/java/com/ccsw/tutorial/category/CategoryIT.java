@@ -18,6 +18,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+// ------------- TEST DE INTEGRACIÓN -----------
+
 //@SpringBootTest -> Inicializa el contexto de Spring
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 
@@ -37,20 +39,20 @@ public class CategoryIT {
     ParameterizedTypeReference<List<CategoryDto>> responseType = new ParameterizedTypeReference<List<CategoryDto>>() {
     };
 
-    // Estructura SHOULD : Indicamos que es lo que vamos a hacer
+    // Estructura SHOULD: Indicamos que es lo que vamos a hacer
     //-------------- LISTA de CATEGORÍAS ------------
     @Test
     public void findAllShouldReturnAllCategories() {
-        // GET
+        // GET -> exchange
         ResponseEntity<List<CategoryDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, responseType);
         assertNotNull(response);
         assertEquals(3, response.getBody().size());
     }
 
+    //-------------- CREACIÓN de CATEGORÍAS ------------
     public static final Long NEW_CATEGORY_ID = 4L;
     public static final String NEW_CATEGORY_NAME = "CAT4";
 
-    //-------------- CREACIÓN de CATEGORÍAS ------------
     @Test
     public void saveWithoutIdShouldCreateNewCategory() {
         CategoryDto dto = new CategoryDto();
@@ -99,7 +101,7 @@ public class CategoryIT {
     //-------------- ELIMINACIÓN de CATEGORÍAS ------------
     public static final Long DELETE_CATEGORY_ID = 2L;
 
-    // Eliminacion y comprobación del tamaño
+    // Eliminación y comprobación del tamaño
     @Test
     public void deleteWithExistsIdShouldDeleteCategory() {
         // DELETE

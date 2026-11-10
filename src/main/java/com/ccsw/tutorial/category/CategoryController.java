@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
  * @author ccsw
  *
  */
-//CONFIGURACION DE TODO EL CONTROLADOR
-//Nombre de la categoría para el swagger, que describe y documenta apis
+//CONFIGURACIÓN DE TODO EL CONTROLADOR
+//Nombre de la categoría para el swagger, que describe y documenta APIS
 @Tag(name = "Category", description = "API of Category")
 @RequestMapping(value = "/category")
 // Lo que devuelvan los métodos será como respuesta HTTP:
@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class CategoryController {
 
-    // Autowired: new CategoryService(); Aqui lo busca en C.IMPL implemnts C.Service y lo inyecta
-    // si ponemos new daría error y nullpoints
+    // Autowired: new CategoryService(); Aquí lo busca en "Category Service Implementación" y lo inyecta
+    // si ponemos new tal cual daría error y null-points
     @Autowired
     private CategoryService categoryService;
 
@@ -40,10 +40,19 @@ public class CategoryController {
      */
     @Operation(summary = "Find", description = "Method that return a list of Categories")
     @RequestMapping(path = "", method = RequestMethod.GET)
+    // Del usuario le llega tipo DTO
     public List<CategoryDto> findAll() {
+        // Para buscar Category (Entity) en los datos (repositorio) y pasarla a
+        // tipo CategoryDto (DTO) para enseñarla al usuario:
         List<Category> categories = this.categoryService.findAll();
 
-        return categories.stream().map(e -> mapper.map(e, CategoryDto.class)).collect(Collectors.toList());
+        // List<Category> -> Stream<Category>
+        return categories.stream()
+                // En cada iteración lo pasa a DTO
+                // Pero: id==id, nombre==nombre (Entity==DTO)
+                .map(e -> mapper.map(e, CategoryDto.class))
+                // Para volver de Stream a ser "List <CategoryDTO>"
+                .collect(Collectors.toList());
     }
 
     /**
@@ -53,7 +62,11 @@ public class CategoryController {
      * @param dto datos de la entidad
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Category")
+    // ""      -> Crear si id == null
+    // "/{id}" -> Actualizar si id == valor
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
+    // @RequestBody:- Recoge el JSON -> a DTO
+    // SOLO cuando necesitas leer datos del usuario/JSON
     public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto) {
         //Hacia el CategoryServiceIMPLEMENTATION
         this.categoryService.save(id, dto);
@@ -67,7 +80,8 @@ public class CategoryController {
     @Operation(summary = "Delete", description = "Method that deletes a Category")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") Long id) throws Exception {
-
+        // Sin @ResquestBody, no lo necesitamos porque el DATO VIENEN EN EL URL
+        // y no necesitamos recibir el objeto completo
         this.categoryService.delete(id);
     }
 }
