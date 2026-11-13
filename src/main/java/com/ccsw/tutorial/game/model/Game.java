@@ -14,7 +14,7 @@ public class Game {
     //Primary key
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "game", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "title", nullable = false)

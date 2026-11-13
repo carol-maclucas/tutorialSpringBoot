@@ -54,6 +54,8 @@ public class GameIT {
         return UriComponentsBuilder.fromHttpUrl(LOCALHOST + port + SERVICE_PATH).queryParam(TITLE_PARAM, "{" + TITLE_PARAM + "}").queryParam(CATEGORY_ID_PARAM, "{" + CATEGORY_ID_PARAM + "}").encode().toUriString();
     }
 
+    //-------------- LISTA de JUEGOS ------------
+    // Sin filtros
     @Test
     public void findWithoutFiltersShouldReturnAllGamesInDB() {
 
@@ -69,6 +71,7 @@ public class GameIT {
         assertEquals(GAMES_WITH_FILTER, response.getBody().size());
     }
 
+    // Con filtro:- Título
     @Test
     public void findExistsTitleShouldReturnGames() {
 
@@ -84,6 +87,7 @@ public class GameIT {
         assertEquals(GAMES_WITH_FILTER, response.getBody().size());
     }
 
+    // Con filtro:- Categoría
     @Test
     public void findExistsCategoryShouldReturnGames() {
 
@@ -99,6 +103,7 @@ public class GameIT {
         assertEquals(GAMES_WITH_FILTER, response.getBody().size());
     }
 
+    // Con filtro:- Título y Categoría
     @Test
     public void findExistsTitleAndCategoryShouldReturnGames() {
 
@@ -114,6 +119,7 @@ public class GameIT {
         assertEquals(GAMES_WITH_FILTER, response.getBody().size());
     }
 
+    // No existe Título
     @Test
     public void findNotExistsTitleShouldReturnEmpty() {
 
@@ -129,6 +135,7 @@ public class GameIT {
         assertEquals(GAMES_WITH_FILTER, response.getBody().size());
     }
 
+    // No existe Categoría
     @Test
     public void findNotExistsCategoryShouldReturnEmpty() {
 
@@ -144,12 +151,15 @@ public class GameIT {
         assertEquals(GAMES_WITH_FILTER, response.getBody().size());
     }
 
+    // No existe ni Título ni Categória
     @Test
     public void findNotExistsTitleOrCategoryShouldReturnEmpty() {
 
         int GAMES_WITH_FILTER = 0;
 
         Map<String, Object> params = new HashMap<>();
+
+        // Título: 0 ; Categoría: 0
         params.put(TITLE_PARAM, NOT_EXISTS_TITLE);
         params.put(CATEGORY_ID_PARAM, NOT_EXISTS_CATEGORY);
 
@@ -157,6 +167,7 @@ public class GameIT {
         assertNotNull(response);
         assertEquals(GAMES_WITH_FILTER, response.getBody().size());
 
+        // Título: 0 ; Categoría: 1
         params.put(TITLE_PARAM, NOT_EXISTS_TITLE);
         params.put(CATEGORY_ID_PARAM, EXISTS_CATEGORY);
 
@@ -164,6 +175,7 @@ public class GameIT {
         assertNotNull(response);
         assertEquals(GAMES_WITH_FILTER, response.getBody().size());
 
+        // Título: 1 ; Categoría: 0
         params.put(TITLE_PARAM, EXISTS_TITLE);
         params.put(CATEGORY_ID_PARAM, NOT_EXISTS_CATEGORY);
 
@@ -172,13 +184,15 @@ public class GameIT {
         assertEquals(GAMES_WITH_FILTER, response.getBody().size());
     }
 
+    //-------------- CREACIÓN de JUEGOS ------------
     @Test
     public void saveWithoutIdShouldCreateNewGame() {
-
+        // Juego
         GameDto dto = new GameDto();
+        // Autor
         AuthorDto authorDto = new AuthorDto();
         authorDto.setId(1L);
-
+        // Categoría
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setId(1L);
 
@@ -191,11 +205,13 @@ public class GameIT {
         params.put(TITLE_PARAM, NEW_TITLE);
         params.put(CATEGORY_ID_PARAM, null);
 
+        // GET - se supone que no hay nada creado
         ResponseEntity<List<GameDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
 
         assertNotNull(response);
         assertEquals(0, response.getBody().size());
 
+        // PUT - creamos el juego
         restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
 
         response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
@@ -204,6 +220,7 @@ public class GameIT {
         assertEquals(1, response.getBody().size());
     }
 
+    //-------------- MODIFICACIÓN de JUEGOS ------------
     @Test
     public void modifyWithExistIdShouldModifyGame() {
 
@@ -223,11 +240,13 @@ public class GameIT {
         params.put(TITLE_PARAM, NEW_TITLE);
         params.put(CATEGORY_ID_PARAM, null);
 
+        // GET
         ResponseEntity<List<GameDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
 
         assertNotNull(response);
         assertEquals(0, response.getBody().size());
 
+        // PUT
         restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + EXISTS_GAME_ID, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
 
         response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
@@ -237,14 +256,15 @@ public class GameIT {
         assertEquals(EXISTS_GAME_ID, response.getBody().get(0).getId());
     }
 
+    //-------------- MODIFICACIÓN de JUEGOS: probar ERROR ------------
+    // Modificando un ID que no existe
     @Test
     public void modifyWithNotExistIdShouldThrowException() {
-
         GameDto dto = new GameDto();
         dto.setTitle(NEW_TITLE);
 
+        //DELETE
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NOT_EXISTS_GAME_ID, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
-
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 

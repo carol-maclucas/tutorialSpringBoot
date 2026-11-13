@@ -24,6 +24,14 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public Category get(Long id) {
+        return this.categoryRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     //SELECT * FROM category;
     @Override
     public List<Category> findAll() {
@@ -41,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (id == null) {
             category = new Category();
         } else {
-            category = this.categoryRepository.findById(id).orElse(null);
+            category = this.get(id);
             // NO DEL TUTORIAL: pero si llega id=3 con categoría=null no se manejaría
             // No es bueno asumir que porque tenga id siempre tendrá categoría
             if (category == null) {
@@ -60,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public void delete(Long id) throws Exception {
-        if (this.categoryRepository.findById(id).orElse(null) == null) {
+        if (this.get(id) == null) {
             throw new Exception("Category not found");
         }
         this.categoryRepository.deleteById(id);

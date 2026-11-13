@@ -93,4 +93,5 @@ public class GameDto {
 
         this.author = author;
     }
+
 }

@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author ccsw
  *
@@ -18,6 +20,23 @@ import org.springframework.stereotype.Service;
 public class AuthorServiceImpl implements AuthorService {
     @Autowired
     AuthorRepository authorRepository;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Author get(Long id) {
+        return this.authorRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Author> findAll() {
+
+        return (List<Author>) this.authorRepository.findAll();
+    }
 
     /**
      * {@inheritDoc}
@@ -39,7 +58,7 @@ public class AuthorServiceImpl implements AuthorService {
         if (id == null) {
             author = new Author();
         } else {
-            author = this.authorRepository.findById(id).orElse(null);
+            author = this.get(id);
 
             if (author == null) {
                 throw new RuntimeException("Author not found");
@@ -58,7 +77,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void delete(Long id) throws Exception {
 
-        if (this.authorRepository.findById(id).orElse(null) == null) {
+        if (this.get(id) == null) {
             throw new Exception("Not exists");
         }
 
